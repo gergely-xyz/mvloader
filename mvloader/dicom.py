@@ -10,20 +10,22 @@ References
 .. [DICOM1] https://github.com/pydicom/pydicom (20180209)
 """
 
-
 from contextlib import contextmanager
+
 try:
     import pydicom  # pydicom >= 1.0
 except ImportError:
     import dicom as pydicom  # pydicom < 1.0
-import numpy as np
-from pathlib import Path
+
 import tarfile
 import tempfile
 import zipfile
+from collections import Counter
+from pathlib import Path
+
+import numpy as np
 
 from mvloader.volume import Volume
-
 
 # TODO: for archives, do not write them back to disk but use "file-like objects" instead, as is done in
 # TODO: https://github.com/rhaxton/contrib-pydicom/blob/master/input-output/dicom_zip_reader.py
@@ -305,6 +307,11 @@ class SliceStacker:
         spc_ref = np.asarray(slice_ref[SliceStacker.PX_SPC_TAG].value)
         c = c @ np.diag(spc_ref)
         mat[:3, :2] = c
+
+        # Filter out slices that have a Pixel Spacing different from the most common one
+        slice_counter = Counter([tuple(s[SliceStacker.PX_SPC_TAG].value) for s in slices])
+        slices = filter(lambda s: tuple(s[SliceStacker.PX_SPC_TAG].value) == slice_counter.most_common(1)[0][0], slices)
+
         # Sort the slices along the determined stacking direction: Calculate the dot product of their "Image Position
         # (Patient)" value with the direction vector to get the position w.r.t. said direction (see [3]_)
         order = lambda s: s[SliceStacker.POS_TAG].value @ stack_dir
