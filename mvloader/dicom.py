@@ -311,7 +311,8 @@ class SliceStacker:
         # Filter out slices that have a Pixel Spacing different from the most common one
         slice_counter = Counter([tuple(s[SliceStacker.PX_SPC_TAG].value) for s in slices])
         slices = filter(lambda s: tuple(s[SliceStacker.PX_SPC_TAG].value) == slice_counter.most_common(1)[0][0], slices)
-
+        n = len(slices)
+        
         # Sort the slices along the determined stacking direction: Calculate the dot product of their "Image Position
         # (Patient)" value with the direction vector to get the position w.r.t. said direction (see [3]_)
         order = lambda s: s[SliceStacker.POS_TAG].value @ stack_dir
