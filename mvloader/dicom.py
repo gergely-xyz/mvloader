@@ -198,8 +198,10 @@ class SliceStacker:
     POS_TAG    = (0x0020, 0x0032)  #: Image Position (Patient)
     PX_SPC_TAG = (0x0028, 0x0030)  #: Pixel Spacing
     ROWS_TAG   = (0x0028, 0x0010)  #: Rows
-    COLS_TAG   = (0x0028, 0x0011)  #: Columns
-    
+    COLS_TAG   = (0x0028, 0x0011)  #: Columns                  
+    PINT_TAG   = (0x0028, 0x0004)  #: Photometric Interpretation
+    SPP_TAG    = (0x0028, 0x0002)  #: Samples Per Pixel
+
     def __init__(self, path, si_uid=None, sloppy=False, recursive=False):
 
         path = Path(path)
@@ -326,10 +328,16 @@ class SliceStacker:
         pos_end = np.asarray(slices[-1][SliceStacker.POS_TAG].value)
         s = (pos_end - pos_0) / (n - 1)
         mat[:3, 2] = s
+
         # Actually stack the slices, then create a new ``Volume`` instance (use `(r, c, s)` indices, see above)
-        stack = np.empty((slice_ref[SliceStacker.ROWS_TAG].value, slice_ref[SliceStacker.COLS_TAG].value, n))
-        for i in range(n):
-            stack[:,:,i] = slices[i].pixel_array
+        if slice_ref[SliceStacker.PINT_TAG].value == "RGB":
+            stack = np.empty((slice_ref[SliceStacker.ROWS_TAG].value, slice_ref[SliceStacker.COLS_TAG].value, n, slice_ref[SliceStacker.SPP_TAG].value))
+            for i in range(n):
+                stack[:,:,i,:] = slices[i].pixel_array
+        else:
+            stack = np.empty((slice_ref[SliceStacker.ROWS_TAG].value, slice_ref[SliceStacker.COLS_TAG].value, n))
+            for i in range(n):
+                stack[:,:,i] = slices[i].pixel_array
         self.volume = Volume(src_voxel_data=stack, src_transformation=mat, src_system=src_system, system="RAS",
                              src_object=self)
 
