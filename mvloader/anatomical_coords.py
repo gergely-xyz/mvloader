@@ -71,7 +71,7 @@ def find_closest_permutation_matrix(trans):
     numpy.ndarray
         The resulting :math:`d×d` permutation-reflection matrix (containing only integers 0, 1, and -1).
     """
-    trans_abs = ma.masked_array(remove_scaling(np.abs(trans)), mask=(np.zeros_like(trans, dtype=np.bool)))
+    trans_abs = ma.masked_array(remove_scaling(np.abs(trans)), mask=(np.zeros_like(trans, dtype=bool)))
 
     perm = np.zeros(trans_abs.shape, dtype=np.int)
     # Set the maxima to ±1, keeping track of rows/columns already set to avoid collisions
