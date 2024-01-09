@@ -255,7 +255,7 @@ def swap(a, perm, spatial_dimensions, copy=False):
 
     # Permute first ndim axes
     permutations = np.arange(a.ndim)
-    permutations[:ndim] = (np.abs(perm) @ np.arange(ndim)).astype(np.int)
+    permutations[:ndim] = (np.abs(perm) @ np.arange(ndim)).astype(int)
     a = np.transpose(a, axes=permutations)
 
     # Push ndim spatial dimensions back to their original axes and return
