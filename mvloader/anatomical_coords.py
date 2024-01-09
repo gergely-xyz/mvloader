@@ -43,7 +43,7 @@ def permutation_matrix(src, dst):  # TODO: test cases
     dst_pos = pos(dst)
 
     ndim = 3
-    dtype = np.int
+    dtype = int
 
     # Actually build the transformation matrix
     mat = np.zeros((ndim, ndim), dtype=dtype)
@@ -73,7 +73,7 @@ def find_closest_permutation_matrix(trans):
     """
     trans_abs = ma.masked_array(remove_scaling(np.abs(trans)), mask=(np.zeros_like(trans, dtype=bool)))
 
-    perm = np.zeros(trans_abs.shape, dtype=np.int)
+    perm = np.zeros(trans_abs.shape, dtype=int)
     # Set the maxima to ±1, keeping track of rows/columns already set to avoid collisions
     while np.sum(~trans_abs.mask) > 0:
         ij_argmax = np.unravel_index(trans_abs.argmax(), trans_abs.shape)
