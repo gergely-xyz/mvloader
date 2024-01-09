@@ -148,7 +148,7 @@ def offset(perm, shape):
     max_indices = np.asarray(shape) - 1
     # Swap if the sign of the respective column's nonzero element is negative -> add offset there
     offset_vector = must_be_flipped(perm[:ndim, :ndim]) * (-max_indices)
-    offset_matrix = np.eye(ndim + 1, dtype=np.int)
+    offset_matrix = np.eye(ndim + 1, dtype=int)
     offset_matrix[:-1, -1] = offset_vector
     return offset_matrix
 
